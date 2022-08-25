@@ -4,46 +4,49 @@
   * @author  Ri-Sheng Chen
   * @brief   This file is a setting SVC number example
   ******************************************************************************
-  *     @attention
-  *         - 目標: Write a program to execute an SVC instruction from thread mode, implement the SVC handler to print the SVC number used. 
-  *                 Also, increment the SVC number by 4 and return it to the thread mode code and print it.
-  *         1. Write a main() function where you should execute the SVC instruction with an argument. Using SVC #0x05 in this case.
-  *         2. Implement the SVC handler function
-  *         3. In the SVC handler extract the SVC number and print it using printf
-  *         4. Increment the SVC number by 4 and return it to the thread mode.
+  * @attention
+  * - Goal: Write a program to execute an SVC instruction from thread mode, implement the SVC handler to print the SVC number used. 
+  *         Also, increment the SVC number by 4 and return it to the thread mode code and print it.
+  * 1. Write a main() function where you should execute the SVC instruction with an argument. Using SVC #0x05 in this case.
+  * 2. Implement the SVC handler function
+  * 3. In the SVC handler extract the SVC number and print it using printf
+  * 4. Increment the SVC number by 4 and return it to the thread mode.
   */
 
 #include <stdio.h>
 #include "myusart.h"
 
-void SVC_Get_Number(uint32_t* MSP_ptr) 
+void get_svc_number(uint32_t *msp) 
 {
-    uint32_t* RetAddr_ptr = (uint32_t*)*(MSP_ptr + 6); // Return Address
-    RetAddr_ptr = (uint32_t*)((uint32_t)RetAddr_ptr - 2);
-    printf("SVC_number = %ld\n", (*RetAddr_ptr & 0xff)); // SVC number為opcode的LSB(2 bit)
-    // 根據AAPCS，回傳資料時順序為R0,R1
-    *MSP_ptr = (*RetAddr_ptr & 0xff) + 4; // SVC number + 4，並存到r0(MSP_ptr[0])中
+    uint8_t *return_addr = (uint8_t *)msp[6]; // get return address
+    uint8_t svc_number = return_addr[-2];
+    printf("svc_number = %d\n", svc_number); // SVC number is the LSB of SVC instruction
+    
+    // according to the AAPCS, the order of return register is r0, r1
+    msp[0] = svc_number + 4; // SVC number + 4 and stored into r0 (msp[0])
 }
 
-int main(void) 
+int main(void)
 {
     MYUSART_Init();
-    __asm volatile("SVC #0x05"); // Trigger SVC exception
-    // 回傳資料法一: register(不建議使用)
-    //register uint32_t data __asm("r0"); // 將r0和暫存器data相關
-    // 回傳資料法二: inline asm
-    uint32_t data;
-    __asm volatile("MOV %0, R0": "=r"(data) ::);
+    __asm volatile("SVC #0x05"); // trigger SVC exception
 
-    printf("new SVC number = %ld\n", data);
+    // return data method 1: Use register
+    // register uint32_t data __asm("r0");
+    
+    // return data method 2: inline assembly
+    uint8_t data;
+    __asm volatile("MOV %0, r0": "=r"(data) ::);
+
+    printf("new SVC number = %d\n", data);
     while(1);
     return 0;
 }
 
 __attribute__ ((naked)) void SVC_Handler(void) 
 {
-    __asm volatile("MRS r0, MSP");  // 把MSP的值存在MRS裡
-    // 根據AAPCS，ARM在函數傳遞引數時，順序為r0, r1, r2, r3，因此r0的值會傳到MSP_ptr
-    __asm volatile("B SVC_Get_Number"); //Branch to SVC_Get_Number
+    __asm volatile("MRS r0, MSP");  // Store MSP value into r0
+    // according to the AAPCS, the value of function parameter "msp" will be r0
+    __asm volatile("B get_svc_number"); //Branch to get_svc_number
 }
 
