@@ -52,10 +52,11 @@ $(BUILD_DIR):
 
 .PHONY: disassembly load upload clean
 disassembly: $(BUILD_DIR)/$(notdir $(TARGET)).elf
-	$(COMPILER)objdump.exe -d $^ > $(BUILD_DIR)/$(notdir $(TARGET)).S
+	$(COMPILER)objdump -d $^ > $(BUILD_DIR)/$(notdir $(TARGET)).S
 load: 
 	openocd -f board/st_nucleo_f3.cfg
 upload:
-	openocd -f interface/stlink.cfg -f target/stm32f3x.cfg -c " program $(BUILD_DIR)/$(notdir $(TARGET)).elf verify exit "
+	# openocd version = 0.10.0
+	openocd -f interface/stlink-v2-1.cfg -f target/stm32f3x.cfg -c " program $(BUILD_DIR)/$(notdir $(TARGET)).elf verify exit "
 clean:
 	@-rm -r $(BUILD_DIR)
