@@ -18,9 +18,8 @@
 
 void get_svc_number(uint32_t *msp) 
 {
-    uint8_t *return_addr = (uint8_t *)msp[6]; // get return address
-    uint8_t svc_number = return_addr[-2];
-    printf("svc_number = %d\n", svc_number); // SVC number is the LSB of SVC instruction
+    uint8_t svc_number = ((uint8_t *)msp[6])[-2]; // get svc number
+    printf("svc_number = %d\n", svc_number);
     
     // according to the AAPCS, the order of return register is r0, r1
     msp[0] = svc_number + 4; // SVC number + 4 and stored into r0 (msp[0])
