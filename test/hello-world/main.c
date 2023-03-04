@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include "myusart.h"
+#include "usart.h"
 
 int main(void)
 {
-    MYUSART_Init();
+    USART_Init();
     printf("Hello world\n");
     return 0;
 }

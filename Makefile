@@ -1,51 +1,30 @@
-# ------------------------------------------------
 # Generic Makefile
-# Author: Ri-Sheng Chen
-# ------------------------------------------------
+export BIN = $(shell pwd)/test/hello-world/main
+export OUT = $(shell pwd)/build
 
-TARGET = test/main
-BUILD_DIR = Debug
-C_SOURCES = $(wildcard ./Src/*.c) $(wildcard ./Src/$(TARGET).c)
-ASM_SOURCES = $(wildcard ./Startup/*.s)
-COMPILER = arm-none-eabi-
-CC = $(COMPILER)gcc
-SZ = $(COMPILER)size
+CM4BM_DIR = cm4bm
+CM4BM_DIR_BUILD = $(CM4BM_DIR)/Makefile
+BIN_NAME = $(notdir $(BIN))
 
-MCU = -mthumb -mcpu=cortex-m4
+# FIXME: Compile other dependencies via cm4bm
+# ifeq ($(TARGET), Task_Scheduler/main)
+# 	C_SOURCES += Task_Scheduler/myscheduler.c
+# 	C_INCLUDES += -ITask_Scheduler/myscheduler.h
+# endif
 
-C_INCLUDES = -IInc
-ifeq ($(TARGET), Task_Scheduler/main) # 如果編譯檔案為scheduler，則多加相關檔案
-	C_SOURCES += Task_Scheduler/myscheduler.c
-	C_INCLUDES += -ITask_Scheduler/myscheduler.h
-endif
+all: $(OUT)/$(BIN_NAME)
 
-CFLAGS = $(MCU) $(C_INCLUDES) -O0 -Wall
-LDSCRIPT = STM32F303ZETX_FLASH.ld
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) -lc -lm -lnosys
+$(CM4BM_DIR_BUILD):
+	git submodule update --init $(dir $@)
 
-OBJECTS = $(patsubst %.c,$(BUILD_DIR)/%.o,$(notdir $(C_SOURCES)))
-vpath %.c $(dir $(C_SOURCES))
-OBJECTS += $(patsubst %.s,$(BUILD_DIR)/%.o,$(notdir $(ASM_SOURCES)))
-vpath %.s $(dir $(ASM_SOURCES))
+$(OUT)/$(BIN_NAME): $(CM4BM_DIR_BUILD)
+	$(MAKE) -C $(CM4BM_DIR) BIN=$(BIN) OUT=$(OUT)
 
-all: clean $(BUILD_DIR)/$(notdir $(TARGET)).elf
-$(BUILD_DIR)/%.o: %.c
-	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
-$(BUILD_DIR)/%.o: %.s
-	$(CC) -c $(CFLAGS) $< -o $@
-$(BUILD_DIR)/$(notdir $(TARGET)).elf: $(BUILD_DIR) $(OBJECTS)
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
-	$(SZ) $@
-$(BUILD_DIR):
-	mkdir $@
+debug:
+	$(MAKE) -C $(CM4BM_DIR) debug
 
-.PHONY: disassembly load upload clean
-disassembly: $(BUILD_DIR)/$(notdir $(TARGET)).elf
-	$(COMPILER)objdump -d $^ > $(BUILD_DIR)/$(notdir $(TARGET)).S
-load: 
-	openocd -f board/st_nucleo_f3.cfg
-upload:
-	# openocd version = 0.10.0
-	openocd -f interface/stlink-v2-1.cfg -f target/stm32f3x.cfg -c " program $(BUILD_DIR)/$(notdir $(TARGET)).elf verify exit "
+upload: $(OUT)/$(BIN_NAME)
+	openocd -f interface/stlink-v2-1.cfg -f target/stm32f3x.cfg -c " program $< verify exit "
+
 clean:
-	@-rm -r $(BUILD_DIR)
+	$(RM) -r $(OUT)
