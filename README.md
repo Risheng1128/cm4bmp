@@ -75,5 +75,5 @@ In `cm4bmp`, there are different example code on Cortex-M4 processor. It can be 
 - [NUCLEO-F303ZE](https://www.st.com/en/evaluation-tools/nucleo-f303ze.html)
 - [OpenOCD](https://openocd.org/)
 - [stlink](https://github.com/stlink-org/stlink)
-- [Cortex-M4 practices](https://hackmd.io/@Risheng/B1KQnDLMc)
-- [Clock configuration](https://hackmd.io/@Risheng/rJuUI7My9)
+- [Cortex-M4 practices](https://hackmd.io/@Risheng/cm4bmp)
+- [Clock configuration](https://hackmd.io/@Risheng/cm4-clock)
