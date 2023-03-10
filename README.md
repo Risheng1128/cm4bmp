@@ -62,8 +62,8 @@ $ target remote localhost:3333
 In `cm4bmp`, there are different example code on Cortex-M4 processor. It can be found in repository `test`.
 - Done
   - hello-world
-- Not done
   - bit band operation
+- Not done
   - clock configuration
   - exception configuration
   - inline assembly
