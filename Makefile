@@ -4,8 +4,8 @@ OUT ?= $(PWD)/build
 BIN ?= main
 
 # c source file
-C_SRC ?= $(PWD)/test/hello-world/main.c
-C_INC ?= 
+INPUT_C_SRC ?= $(PWD)/test/hello-world/main.c
+INPUT_C_INC ?= 
 
 # cm4bm project path
 CM4BM_DIR = cm4bm
@@ -17,7 +17,7 @@ $(CM4BM_DIR_BUILD):
 	git submodule update --init $(dir $@)
 
 $(OUT)/$(BIN_NAME): $(CM4BM_DIR_BUILD)
-	$(MAKE) -C $(CM4BM_DIR) OUT=$(OUT) BIN=$(BIN) INPUT_C_SRC=$(C_SRC) INPUT_C_INC=$(C_INC)
+	$(MAKE) -C $(CM4BM_DIR) OUT=$(OUT) BIN=$(BIN) INPUT_C_SRC=$(INPUT_C_SRC) INPUT_C_INC=$(INPUT_C_INC)
 
 debug:
 	$(MAKE) -C $(CM4BM_DIR) debug

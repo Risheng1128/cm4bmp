@@ -24,6 +24,20 @@ make clean
 make OUT=`pwd`/build BIN=bit-band INPUT_C_SRC=`pwd`/test/bit-band/bit-band.c
 make clean
 
+# test clock configuration
+make OUT=`pwd`/build BIN=exercise1 INPUT_C_SRC=`pwd`/test/clock/exercise1.c INPUT_C_INC=-I`pwd`/test/clock
+make clean
+make OUT=`pwd`/build BIN=exercise2 INPUT_C_SRC=`pwd`/test/clock/exercise2.c INPUT_C_INC=-I`pwd`/test/clock
+make clean
+make OUT=`pwd`/build BIN=exercise3 INPUT_C_SRC=`pwd`/test/clock/exercise3.c INPUT_C_INC=-I`pwd`/test/clock
+make clean
+make OUT=`pwd`/build BIN=exercise4 INPUT_C_SRC=`pwd`/test/clock/exercise4.c INPUT_C_INC=-I`pwd`/test/clock
+make clean
+make OUT=`pwd`/build BIN=exercise5 INPUT_C_SRC=`pwd`/test/clock/exercise5.c INPUT_C_INC=-I`pwd`/test/clock
+make clean
+make OUT=`pwd`/build BIN=exercise6 INPUT_C_SRC=`pwd`/test/clock/exercise6.c INPUT_C_INC=-I`pwd`/test/clock
+make clean
+
 # test inline assembly
 make OUT=`pwd`/build BIN=inline-asm INPUT_C_SRC=`pwd`/test/inline/inline-asm.c
 make clean
