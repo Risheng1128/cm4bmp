@@ -1,16 +1,15 @@
 # Generic Makefile
-export BIN = $(shell pwd)/test/hello-world/main
-export OUT = $(shell pwd)/build
+PWD = $(shell pwd)
+OUT ?= $(PWD)/build
+BIN ?= main
 
+# c source file
+C_SRC ?= $(PWD)/test/hello-world/main.c
+C_INC ?= 
+
+# cm4bm project path
 CM4BM_DIR = cm4bm
 CM4BM_DIR_BUILD = $(CM4BM_DIR)/Makefile
-BIN_NAME = $(notdir $(BIN))
-
-# FIXME: Compile other dependencies via cm4bm
-# ifeq ($(TARGET), Task_Scheduler/main)
-# 	C_SOURCES += Task_Scheduler/myscheduler.c
-# 	C_INCLUDES += -ITask_Scheduler/myscheduler.h
-# endif
 
 all: $(OUT)/$(BIN_NAME)
 
@@ -18,13 +17,13 @@ $(CM4BM_DIR_BUILD):
 	git submodule update --init $(dir $@)
 
 $(OUT)/$(BIN_NAME): $(CM4BM_DIR_BUILD)
-	$(MAKE) -C $(CM4BM_DIR) BIN=$(BIN) OUT=$(OUT)
+	$(MAKE) -C $(CM4BM_DIR) OUT=$(OUT) BIN=$(BIN) INPUT_C_SRC=$(C_SRC) INPUT_C_INC=$(C_INC)
 
 debug:
 	$(MAKE) -C $(CM4BM_DIR) debug
 
 upload: $(OUT)/$(BIN_NAME)
-	openocd -f interface/stlink-v2-1.cfg -f target/stm32f3x.cfg -c " program $< verify exit "
+	$(MAKE) -C $(CM4BM_DIR) upload OUT=$(OUT) BIN=$(BIN)
 
 clean:
 	$(RM) -r $(OUT)
