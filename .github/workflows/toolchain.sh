@@ -41,3 +41,7 @@ make clean
 # test inline assembly
 make OUT=`pwd`/build BIN=inline-asm INPUT_C_SRC=`pwd`/test/inline/inline-asm.c
 make clean
+
+# test stack pointer configuration
+make OUT=`pwd`/build BIN=stack INPUT_C_SRC=`pwd`/test/stack/stack.c
+make clean

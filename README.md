@@ -65,11 +65,11 @@ In `cm4bmp`, there are different example code on Cortex-M4 processor. It can be 
   - clock configuration
   - hello-world
   - inline assembly
+  - stack pointer configuration
 - Not done
   - exception configuration
   - interrupt configuration
   - task scheduler
-  - stack pointer configuration
 
 ## Reference
 - [NUCLEO-F303ZE](https://www.st.com/en/evaluation-tools/nucleo-f303ze.html)
